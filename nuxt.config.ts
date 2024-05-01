@@ -7,19 +7,20 @@ export default defineNuxtConfig({
 		storesDirs: ['./stores/**']
 	},
 	runtimeConfig: {
-		clientId: '',
-		clientSecret: '',
-		redirectUri: '',
+		clientId: 'a',
+		clientSecret: 's',
+		redirectUri: 'v',
 		public: {
 			clientId: '',
-			baseUrl: ''
+			baseUrl: '',
+			test:''
 		}
 	},
   app: {
 		head: {
 			charset: 'utf-8',
 			viewport: 'width=device-width, initial-scale=1',
-			title: 'Chartify',
+			title: 'Chartifydata',
 			meta: [
 				{
 					name: 'description',
