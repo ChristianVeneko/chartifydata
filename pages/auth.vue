@@ -24,3 +24,6 @@ onMounted(() => {
   window.location.href = '/';
 });
 </script>
+<template>
+    <h1>redirecting...</h1>
+  </template>

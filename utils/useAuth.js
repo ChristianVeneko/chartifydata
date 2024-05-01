@@ -1,5 +1,15 @@
 import { ref, onMounted } from 'vue';
 
+export async function getRefreshToken() {
+	const refreshToken = localStorage.getItem('refreshToken')
+
+	const res = await fetch('api/refresh?refresh_token=' + refreshToken)
+	const data = await res.json()
+
+	if (!data.access_token) return data.access_token
+	return false
+}
+
 export function useAuth() {
   const isLoading = ref(true);
   const isLoggedIn = ref(false);
@@ -12,7 +22,6 @@ export function useAuth() {
           'Authorization': `Bearer ${token}`
         }
       });
-      console.log(response.json())
       return response.ok;
     } catch (error) {
       console.error('Error al validar el token de acceso:', error);
@@ -33,7 +42,14 @@ export function useAuth() {
         isLoggedIn.value = true;
         accessToken.value = storedAccessToken;
       } else {
-        isLoggedIn.value = false;
+        const newAccesToken = await getRefreshToken()
+        if(newAccesToken){
+            localStorage.setItem('accessToken', newAccesToken)
+            accessToken.value = localStorage.getItem('accessToken')
+            isLoggedIn.value = true
+        }else{
+            isLoggedIn.value = false;
+        }
       }
     } else {
       isLoggedIn.value = false;

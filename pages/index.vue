@@ -42,14 +42,9 @@ const updateIsLoggedIn = (newValue) => {
   console.log(isLoading)
 };
 
-const reLogin = async () => {
-  window.location.href = `${API_URL}/login`;
-}
 </script>
 
 <template>
-
-  <body>
     <div id="app">
       <Header></Header>
       <div id="container">
@@ -64,6 +59,4 @@ const reLogin = async () => {
         </div>
       </div>
     </div>
-  </body>
-
 </template>
