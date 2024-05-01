@@ -5,6 +5,8 @@
         <label for="topArtists">Top Artists</label><br>
         <input type="radio" id="topSongs" v-model="topMusic" value="tracks">
         <label for="topSongs">Top Songs</label><br>
+        <input type="radio" id="topAlbums" v-model="topMusic" value="albums">
+        <label for="topAlbums">Top Albums</label> <br>
   
         <label for="time">Time</label>
         <select v-model="timeRange" name="time" id="time">

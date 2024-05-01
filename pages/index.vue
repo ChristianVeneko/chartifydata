@@ -10,9 +10,6 @@ import MusicForm from '~/components/MusicForm.vue';
 import ResultsComponent from '~/components/ResultsComponent.vue';
 import Loading from '~/components/Loading.vue';
 
-const API_URL = import.meta.env.VITE_API_URL
-
-
 const chartData = ref([]);
 const dataType = ref('artists');
 const music = ref(null);
@@ -26,20 +23,20 @@ if(isLoading){
 const getChart = async (data) => {
   if (data.dataType === 'artists') {
     dataType.value = 'artist';
-    const topArtists = await music.value.getTopMusic(data.dataTime, data.dataQuantity, data.dataType);
-    chartData.value = topArtists;
-  } else {
+    const dataArtist = await music.value.getTopMusic(data.dataTime, data.dataQuantity, data.dataType);
+    const topArtist = music.value.createTopArtist(dataArtist)
+    chartData.value = topArtist;
+  } else if (data.dataType === 'tracks') {
     dataType.value = 'song';
-    const topTracks = await music.value.getTopMusic(data.dataTime, data.dataQuantity, data.dataType);
-    console.log(topTracks)
+    const dataTracks = await music.value.getTopMusic(data.dataTime, data.dataQuantity, data.dataType);
+    const topTracks = await music.value.createTopSongs(dataTracks)
     chartData.value = topTracks;
+  } else{
+    dataType.value = 'album'
+    const dataAlbums = await music.value.getTopMusic(data.dataTime, data.dataQuantity, 'tracks');
+    const topAlbums = await music.value.getTopAlbums(dataAlbums)
+    chartData.value = topAlbums
   }
-};
-
-
-const updateIsLoggedIn = (newValue) => {
-  isLoggedIn.value = newValue;
-  console.log(isLoading)
 };
 
 </script>

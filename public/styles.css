@@ -132,11 +132,11 @@ body {
     flex: 0.2;
   }
   
-  .cover, .artist-image {
+  .cover, .artist-image, .album-image {
     flex: 0.3;
   }
   
-  .cover img, .artist-image img {
+  .cover img, .artist-image img, .album-image img{
     max-width: 100%;
     height: auto;
     border-radius: 5px;
@@ -156,7 +156,7 @@ body {
   }
   
   
-  .artist-card {
+  .artist-card, .album-card {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -191,7 +191,7 @@ body {
   }
   /* Estilo para dispositivos móviles */
   @media (max-width: 600px) {
-    .artist-card {
+    .artist-card, .album-card {
       width: 46%; 
     }
   }
@@ -201,7 +201,7 @@ body {
         padding: 10px;
     }
   
-    #formulario, .song-card, .artist-card {
+    #formulario, .song-card, .artist-card, .album-card {
         padding: 10px;
     }
   
