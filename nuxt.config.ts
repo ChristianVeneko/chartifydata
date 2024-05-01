@@ -2,6 +2,9 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
+  css: [
+    '@/public/styles.css', // Ruta a tu archivo de estilos globales
+  ],
   modules: ['@pinia/nuxt'],
 	pinia: {
 		storesDirs: ['./stores/**']
@@ -16,6 +19,7 @@ export default defineNuxtConfig({
 			test:''
 		}
 	},
+
   app: {
 		head: {
 			charset: 'utf-8',
