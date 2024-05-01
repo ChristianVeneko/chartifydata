@@ -6,7 +6,7 @@ export async function getRefreshToken() {
 	const res = await fetch('api/refresh?refresh_token=' + refreshToken)
 	const data = await res.json()
 
-	if (!data.access_token) return data.access_token
+	if (data.access_token) return data.access_token
 	return false
 }
 
@@ -52,6 +52,7 @@ export function useAuth() {
         }
       }
     } else {
+        console.log('aaaai')
       isLoggedIn.value = false;
     }
 
