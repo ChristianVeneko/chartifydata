@@ -7,7 +7,7 @@ export default defineNuxtConfig({
   ],
   modules: ['@pinia/nuxt'],
 	pinia: {
-		storesDirs: ['./stores/**']
+		autoImports: ['defineStore', 'acceptHMRUpdate'],
 	},
 	runtimeConfig: {
 		// Variables disponibles solo en el servidor
@@ -21,49 +21,45 @@ export default defineNuxtConfig({
 			appDescription: process.env.NUXT_PUBLIC_APP_DESCRIPTION || 'Visualize your Spotify statistics',
 		}
 	},
+  // Optimizaciones para build
+  build: {
+    transpile: ['pinia'],
+  },
+  
   // Optimizaciones para vite
   vite: {
     // Optimizar la compilación de Vue
     vue: {
       template: {
-        compilerOptions: {}
-      }
-    },
-    // Resolver alias más eficientemente
-    resolve: {
-      alias: {
-        'vue': 'vue/dist/vue.esm-bundler.js'
-      }
-    },
-    // Optimizar la construcción
-    build: {
-      // Fragmentar el código para mejor rendimiento
-      chunkSizeWarningLimit: 1000, // Aumentar el límite de advertencia
-      rollupOptions: {
-        output: {
-          manualChunks: {
-            // Separar en chunks para cargar en paralelo
-            'vue-vendor': ['vue', 'vue-router'],
-            // Removemos pinia de aquí para evitar conflictos
-          }
+        compilerOptions: {
+          hoistStatic: true,
+          cacheHandlers: true
         }
-      },
-      // Minificar el código en producción
-      minify: process.env.NODE_ENV === 'production',
-      // Desactivar source maps en producción
-      sourcemap: process.env.NODE_ENV !== 'production'
+      }
     },
+    
+    // Configuración básica de build
+    build: {
+      target: 'es2019',
+      minify: 'terser',
+      terserOptions: {
+        compress: {
+          drop_console: process.env.NODE_ENV === 'production',
+          drop_debugger: process.env.NODE_ENV === 'production',
+        }
+      }
+    },
+    
     // Optimizar la caché
     optimizeDeps: {
-      include: ['vue']
-      // Removemos pinia para evitar el conflicto
+      include: ['pinia'],
+      exclude: ['vue'],  // Excluir Vue ya que es manejado por Nuxt
     }
   },
 
   // Optimizaciones para la construcción de Nuxt
   build: {
-    // No marcar pinia como externo
-    // transpile: ['pinia']
+    analyze: false,
   },
   
   // Optimizar nitro server
@@ -107,4 +103,5 @@ export default defineNuxtConfig({
     // Activar tree shaking para componentes del lado del cliente
     treeshakeClientOnly: true
   }
+  
 })
