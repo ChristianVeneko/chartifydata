@@ -16,6 +16,8 @@ html, body {
   font-size: var(--font-size-md);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 #app {
@@ -119,10 +121,13 @@ main {
   margin-right: auto;
 }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 var(--space-md);
+.container, .header-container, .results-container, .login-content, .main-content {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding-left: var(--space-md);
+  padding-right: var(--space-md);
+  margin: 0;
 }
 
 /* Scrollbar personalizada */
@@ -142,4 +147,12 @@ main {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--spotify-light-gray);
+}
+
+/* Ajustes específicos para móvil */
+@media (max-width: 768px) {
+  .container, .header-container, .results-container, .login-content, .main-content {
+    padding-left: var(--space-sm);
+    padding-right: var(--space-sm);
+  }
 } 

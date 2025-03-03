@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div class="app-container">
     <Header />
     <main>
       <NuxtPage />
@@ -18,6 +18,40 @@
 
 <script setup>
 import Header from '~/components/Header.vue';
+import { onMounted } from 'vue';
+import { useHead } from 'nuxt/app';
+
+useHead({
+  meta: [
+    { name: 'viewport', content: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' },
+    { name: 'description', content: 'Chartify - Analiza tus datos de Spotify' },
+    { charset: 'utf-8' }
+  ],
+  title: 'Chartify - Tu análisis musical',
+  htmlAttrs: {
+    lang: 'es'
+  }
+});
+
+onMounted(() => {
+  if (process.client) {
+    // Función para detectar elementos que causan overflow
+    function findCulprits() {
+      const docWidth = document.documentElement.offsetWidth;
+      const elements = document.querySelectorAll('*');
+      
+      for (let i = 0; i < elements.length; i++) {
+        const el = elements[i];
+        if (el.offsetWidth > docWidth) {
+          console.log('Elemento con overflow:', el, `Ancho: ${el.offsetWidth}px, Doc ancho: ${docWidth}px`);
+        }
+      }
+    }
+    
+    // Ejecutar después de que la página cargue completamente
+    setTimeout(findCulprits, 1000);
+  }
+});
 </script>
 
 <style>
@@ -67,4 +101,13 @@ import Header from '~/components/Header.vue';
   background-color: var(--spotify-green);
   text-decoration: none;
 }
+
+.app-container {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 </style>
+

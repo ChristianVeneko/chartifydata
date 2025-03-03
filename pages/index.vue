@@ -452,4 +452,23 @@ const scrollToForm = () => {
     padding: var(--space-lg);
   }
 }
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 var(--space-sm);
+  }
+  
+  .login-content,
+  .main-content {
+    padding: var(--space-lg);
+  }
+}
 </style>

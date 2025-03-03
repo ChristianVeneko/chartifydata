@@ -15,14 +15,6 @@
       
       <nav class="nav-menu">
         <ul class="nav-list">
-          <li class="nav-item">
-            <NuxtLink to="/" class="nav-link" active-class="active">
-              <svg viewBox="0 0 24 24" width="20" height="20">
-                <path fill="currentColor" d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z" />
-              </svg>
-              <span>Home</span>
-            </NuxtLink>
-          </li>
           <li v-if="!authStore.isLoggedIn" class="nav-item">
             <a :href="loginUrl" class="nav-link login-btn">
               <svg viewBox="0 0 24 24" width="20" height="20">

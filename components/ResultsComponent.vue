@@ -451,6 +451,17 @@ const exportData = () => {
   .results-grid {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: var(--space-sm);
+    width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .results-container {
+    padding: var(--space-sm);
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin: 0;
   }
   
   .results-title {
@@ -474,6 +485,9 @@ const exportData = () => {
   .results-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: var(--space-xs);
+    margin: 0;
+    width: 100%;
+    padding: 0;
   }
   
   .rank-badge {
@@ -490,6 +504,11 @@ const exportData = () => {
   .spotify-link {
     width: 16px;
     height: 16px;
+  }
+  
+  .result-card {
+    width: 100%;
+    margin: 0;
   }
 }
 

@@ -21,24 +21,8 @@ export default defineNuxtConfig({
 			appDescription: process.env.NUXT_PUBLIC_APP_DESCRIPTION || 'Visualize your Spotify statistics',
 		}
 	},
-  // Optimizaciones para build
-  build: {
-    transpile: ['pinia'],
-  },
-  
-  // Optimizaciones para vite
+  // Optimizaciones más simples
   vite: {
-    // Optimizar la compilación de Vue
-    vue: {
-      template: {
-        compilerOptions: {
-          hoistStatic: true,
-          cacheHandlers: true
-        }
-      }
-    },
-    
-    // Configuración básica de build
     build: {
       target: 'es2019',
       minify: 'terser',
@@ -50,13 +34,12 @@ export default defineNuxtConfig({
       }
     },
     
-    // Optimizar la caché
+    // Eliminar configuraciones problemáticas
     optimizeDeps: {
-      include: ['pinia'],
-      exclude: ['vue'],  // Excluir Vue ya que es manejado por Nuxt
+      // Eliminar configuraciones de exclude e include que puedan causar conflictos
     }
   },
-
+  
   // Optimizaciones para la construcción de Nuxt
   build: {
     analyze: false,
