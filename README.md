@@ -157,12 +157,6 @@ Las contribuciones son bienvenidas. Por favor, sigue estos pasos:
 
 Este proyecto está licenciado bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.
 
-## Contacto
-
-Tu Nombre - [@tu_twitter](https://twitter.com/tu_twitter) - email@example.com
-
-Link del proyecto: [https://github.com/tu-usuario/chartifydata](https://github.com/tu-usuario/chartifydata)
-
 ## Agradecimientos
 
 - [Spotify Web API](https://developer.spotify.com/documentation/web-api/)
