@@ -29,14 +29,11 @@ export default defineEventHandler((event) => {
   
   // Extended scopes for a complete Spotify API
   const scope = [
-    'user-read-private',
-    'user-read-email',
-    'user-top-read',
-    'user-read-recently-played',
-    'user-library-read',
-    'playlist-read-private',
-    'playlist-read-collaborative',
-    'user-follow-read'
+    'user-read-private',    // Para información básica del perfil
+    'user-read-email',      // Para identificación del usuario
+    'user-top-read',        // Para obtener top artistas y canciones
+    'user-read-recently-played',  // Para análisis de escuchas recientes
+    'user-library-read'     // Para análisis de biblioteca
   ].join(' ');
   
   const params = new URLSearchParams({
