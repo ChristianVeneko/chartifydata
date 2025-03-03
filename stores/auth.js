@@ -1,48 +1,7 @@
-import { ref, onMounted, computed, onUnmounted } from 'vue';
+import { defineStore } from 'pinia';
+import { ref, computed } from 'vue';
 
-export async function getRefreshToken() {
-  try {
-    const refreshToken = localStorage.getItem('spotify_refresh_token');
-    if (!refreshToken) {
-      console.error('No refresh token available');
-      return false;
-    }
-
-    const res = await fetch('/api/refresh', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ refresh_token: refreshToken })
-    });
-    
-    if (!res.ok) {
-      const errorData = await res.json().catch(() => ({}));
-      console.error('Error refreshing token:', errorData.error || res.statusText);
-      console.error('Error details:', errorData);
-      return false;
-    }
-    
-    const data = await res.json();
-
-    if (data.access_token) {
-      // Actualizar el tiempo de expiración si está disponible
-      if (data.expires_in) {
-        const expiresAt = Date.now() + (data.expires_in * 1000);
-        localStorage.setItem('spotify_token_expires_at', expiresAt.toString());
-      }
-      
-      return data.access_token;
-    }
-    
-    return false;
-  } catch (error) {
-    console.error('Error in getRefreshToken:', error);
-    return false;
-  }
-}
-
-export function useAuth() {
+export const useAuthStore = defineStore('auth', () => {
   const isLoading = ref(true);
   const isLoggedIn = ref(false);
   const accessToken = ref(null);
@@ -61,6 +20,7 @@ export function useAuth() {
     return tokenExpiresIn.value < 300; // 5 minutos en segundos
   });
 
+  // Función para validar un token de acceso
   const validateAccessToken = async (token) => {
     try {
       const response = await fetch('https://api.spotify.com/v1/me', {
@@ -83,6 +43,55 @@ export function useAuth() {
     }
   };
 
+  // Función para refrescar el token
+  const getRefreshToken = async () => {
+    try {
+      const refreshToken = localStorage.getItem('spotify_refresh_token');
+      if (!refreshToken) {
+        console.error('No refresh token available');
+        return false;
+      }
+
+      const res = await fetch('/api/refresh', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ refresh_token: refreshToken })
+      });
+      
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        console.error('Error refreshing token:', errorData.error || res.statusText);
+        console.error('Error details:', errorData);
+        return false;
+      }
+      
+      const data = await res.json();
+
+      if (data.access_token) {
+        // Actualizar el token en el estado y localStorage
+        accessToken.value = data.access_token;
+        localStorage.setItem('spotify_access_token', data.access_token);
+        
+        // Actualizar el tiempo de expiración si está disponible
+        if (data.expires_in) {
+          const expiresAt = Date.now() + (data.expires_in * 1000);
+          tokenExpiresAt.value = expiresAt;
+          localStorage.setItem('spotify_token_expires_at', expiresAt.toString());
+        }
+        
+        return data.access_token;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('Error in getRefreshToken:', error);
+      return false;
+    }
+  };
+
+  // Función para verificar y validar el token de acceso
   const checkAccessToken = async () => {
     isLoading.value = true;
 
@@ -101,7 +110,6 @@ export function useAuth() {
           const newAccessToken = await getRefreshToken();
           
           if (newAccessToken) {
-            localStorage.setItem('spotify_access_token', newAccessToken);
             accessToken.value = newAccessToken;
             isLoggedIn.value = true;
           } else {
@@ -122,7 +130,6 @@ export function useAuth() {
             const newAccessToken = await getRefreshToken();
             
             if (newAccessToken) {
-              localStorage.setItem('spotify_access_token', newAccessToken);
               accessToken.value = newAccessToken;
               isLoggedIn.value = true;
             } else {
@@ -142,6 +149,12 @@ export function useAuth() {
       accessToken.value = null;
     } finally {
       isLoading.value = false;
+      // Emitir evento personalizado después de actualizar el estado de autenticación
+      if (process.client) {
+        window.dispatchEvent(new CustomEvent('auth-state-changed', { 
+          detail: { isLoggedIn: isLoggedIn.value }
+        }));
+      }
     }
   };
 
@@ -159,33 +172,28 @@ export function useAuth() {
   // Función para cerrar sesión
   const logout = () => {
     clearAuthData();
+    
+    // Emitir evento personalizado después de cerrar sesión
+    if (process.client) {
+      window.dispatchEvent(new CustomEvent('auth-state-changed', { 
+        detail: { isLoggedIn: false }
+      }));
+    }
+    
+    console.log('Logout completed, authentication state reset');
   };
 
-  // Configurar un intervalo para verificar y refrescar el token automáticamente
-  let tokenRefreshInterval;
-
-  onMounted(() => {
+  // Inicializar el estado al cargar la página
+  if (process.client) {
     checkAccessToken();
-    
-    // Verificar el token cada minuto
-    tokenRefreshInterval = setInterval(() => {
-      if (isLoggedIn.value && isTokenExpiringSoon.value) {
-        getRefreshToken().then(newToken => {
-          if (newToken) {
-            localStorage.setItem('spotify_access_token', newToken);
-            accessToken.value = newToken;
-          }
-        });
-      }
-    }, 60000); // Cada minuto
-  });
 
-  // Limpiar el intervalo cuando el componente se desmonta
-  onUnmounted(() => {
-    if (tokenRefreshInterval) {
-      clearInterval(tokenRefreshInterval);
-    }
-  });
+    // Suscripción a eventos de almacenamiento para sincronizar estados en diferentes pestañas
+    window.addEventListener('storage', (event) => {
+      if (event.key === 'spotify_access_token' || event.key === 'spotify_token_expires_at') {
+        checkAccessToken();
+      }
+    });
+  }
 
   return { 
     isLoading, 
@@ -195,6 +203,7 @@ export function useAuth() {
     tokenExpiresIn,
     isTokenExpiringSoon,
     logout,
-    checkAccessToken
+    checkAccessToken,
+    getRefreshToken
   };
-}
+}); 

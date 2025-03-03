@@ -1,103 +1,224 @@
 <template>
-  <header class="app-header">
+  <header class="header">
     <div class="header-container">
-      <div class="logo">
-        <div class="logo-icon">
-          <svg viewBox="0 0 24 24" width="28" height="28">
-            <path fill="currentColor" d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,7C9.24,7 7,9.24 7,12C7,14.76 9.24,17 12,17C14.76,17 17,14.76 17,12C17,9.24 14.76,7 12,7M12,9C13.66,9 15,10.34 15,12C15,13.66 13.66,15 12,15C10.34,15 9,13.66 9,12C9,10.34 10.34,9 12,9Z" />
-          </svg>
-        </div>
-        <h1>Chartifydata</h1>
+      <div class="logo-container">
+        <NuxtLink to="/" class="logo-link">
+          <div class="logo">
+            <svg viewBox="0 0 24 24" width="32" height="32">
+              <path fill="currentColor" d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9Z" />
+            </svg>
+            <span class="logo-text">Chartify<span class="highlight">data</span></span>
+          </div>
+        </NuxtLink>
+        <div class="tagline">Visualize your Spotify statistics</div>
       </div>
       
-      <div class="user-info" v-if="username">
-        <div class="user-avatar">
-          <span>{{ username.charAt(0).toUpperCase() }}</span>
-        </div>
-        <div class="user-details">
-          <span class="username">{{ username }}</span>
-          <button class="logout-button" @click="$emit('logout')">
-            <span>Cerrar sesión</span>
-            <svg viewBox="0 0 24 24" width="16" height="16">
-              <path fill="currentColor" d="M16,17V14H9V10H16V7L21,12L16,17M14,2A2,2 0 0,1 16,4V6H14V4H5V20H14V18H16V20A2,2 0 0,1 14,22H5A2,2 0 0,1 3,20V4A2,2 0 0,1 5,2H14Z" />
-            </svg>
-          </button>
-        </div>
-      </div>
+      <nav class="nav-menu">
+        <ul class="nav-list">
+          <li class="nav-item">
+            <NuxtLink to="/" class="nav-link" active-class="active">
+              <svg viewBox="0 0 24 24" width="20" height="20">
+                <path fill="currentColor" d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z" />
+              </svg>
+              <span>Home</span>
+            </NuxtLink>
+          </li>
+          <li v-if="!authStore.isLoggedIn" class="nav-item">
+            <a :href="loginUrl" class="nav-link login-btn">
+              <svg viewBox="0 0 24 24" width="20" height="20">
+                <path fill="currentColor" d="M10,17V14H3V10H10V7L15,12L10,17M10,2H19A2,2 0 0,1 21,4V20A2,2 0 0,1 19,22H10A2,2 0 0,1 8,20V18H10V20H19V4H10V6H8V4A2,2 0 0,1 10,2Z" />
+              </svg>
+              <span>Login</span>
+            </a>
+          </li>
+          <li v-else class="nav-item user-profile">
+            <div class="user-info" @click="toggleUserMenu">
+              <div v-if="authStore.userProfile" class="user-avatar">
+                <img 
+                  v-if="authStore.userProfile.images && authStore.userProfile.images.length > 0" 
+                  :src="authStore.userProfile.images[0].url" 
+                  :alt="authStore.userProfile.display_name"
+                />
+                <div v-else class="avatar-placeholder">
+                  {{ authStore.userProfile.display_name ? authStore.userProfile.display_name.charAt(0).toUpperCase() : 'U' }}
+                </div>
+              </div>
+              <span class="user-name">{{ authStore.userProfile ? authStore.userProfile.display_name : 'User' }}</span>
+              <svg viewBox="0 0 24 24" width="16" height="16" class="dropdown-icon">
+                <path fill="currentColor" d="M7,10L12,15L17,10H7Z" />
+              </svg>
+            </div>
+            
+            <div v-if="showUserMenu" class="user-dropdown">
+              <a href="#" class="dropdown-item" @click.prevent="logout">
+                <svg viewBox="0 0 24 24" width="16" height="16">
+                  <path fill="currentColor" d="M16,17V14H9V10H16V7L21,12L16,17M14,2A2,2 0 0,1 16,4V6H14V4H5V20H14V18H16V20A2,2 0 0,1 14,22H5A2,2 0 0,1 3,20V4A2,2 0 0,1 5,2H14Z" />
+                </svg>
+                <span>Logout</span>
+              </a>
+            </div>
+          </li>
+        </ul>
+      </nav>
     </div>
   </header>
 </template>
 
 <script setup>
-defineProps({
-  username: {
-    type: String,
-    default: null
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '~/stores/auth';
+
+const router = useRouter();
+const authStore = useAuthStore();
+const showUserMenu = ref(false);
+const loginUrl = '/api/login';
+
+const toggleUserMenu = () => {
+  showUserMenu.value = !showUserMenu.value;
+};
+
+const closeUserMenu = (event) => {
+  if (showUserMenu.value && !event.target.closest('.user-profile')) {
+    showUserMenu.value = false;
   }
+};
+
+const logout = () => {
+  authStore.logout();
+  showUserMenu.value = false;
+  router.push('/');
+};
+
+// Actualización reactiva al cambio de estado de autenticación
+watch(() => authStore.isLoggedIn, (newValue) => {
+  console.log('Auth state changed in Header:', newValue);
+}, { immediate: true });
+
+onMounted(() => {
+  window.addEventListener('click', closeUserMenu);
+  
+  // Verificar autenticación al montar el componente
+  authStore.checkAccessToken();
 });
 
-defineEmits(['logout']);
+onBeforeUnmount(() => {
+  window.removeEventListener('click', closeUserMenu);
+});
 </script>
 
 <style scoped>
-.app-header {
-  background: linear-gradient(to right, #121212, #1e1e1e);
-  color: white;
-  padding: 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+.header {
+  background-color: var(--spotify-black);
+  border-bottom: 1px solid var(--spotify-dark-gray);
   position: sticky;
   top: 0;
   z-index: 100;
+  box-shadow: var(--shadow-md);
 }
 
 .header-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 15px 20px;
+  padding: var(--space-md) var(--space-lg);
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
+.logo-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.logo-link {
+  text-decoration: none;
+}
+
 .logo {
   display: flex;
   align-items: center;
-  gap: 12px;
+  color: var(--spotify-white);
+  gap: var(--space-sm);
 }
 
-.logo-icon {
-  color: #1db954;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: pulse 2s infinite ease-in-out;
+.logo svg {
+  color: var(--spotify-green);
 }
 
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-  100% { transform: scale(1); }
-}
-
-.logo h1 {
-  margin: 0;
+.logo-text {
   font-size: 24px;
   font-weight: 700;
-  background: linear-gradient(to right, #1db954, #1ed760);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  letter-spacing: 0.5px;
+  letter-spacing: -0.5px;
+}
+
+.highlight {
+  color: var(--spotify-green);
+}
+
+.tagline {
+  font-size: 12px;
+  color: var(--spotify-light-gray);
+  margin-top: var(--space-xs);
+  margin-left: var(--space-md);
+}
+
+.nav-menu {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.nav-list {
+  display: flex;
+  list-style: none;
+  gap: var(--space-md);
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  color: var(--spotify-light-gray);
+  text-decoration: none;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.nav-link:hover, .nav-link.active {
+  color: var(--spotify-white);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.login-btn {
+  background-color: var(--spotify-green);
+  color: var(--spotify-black) !important;
+  font-weight: 600;
+}
+
+.login-btn:hover {
+  background-color: var(--spotify-green-light) !important;
+  transform: translateY(-2px);
+}
+
+.user-profile {
+  position: relative;
 }
 
 .user-info {
   display: flex;
   align-items: center;
-  gap: 15px;
-  background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 30px;
-  padding: 5px 10px 5px 5px;
-  transition: all 0.3s ease;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: var(--spotify-dark-gray);
 }
 
 .user-info:hover {
@@ -105,62 +226,103 @@ defineEmits(['logout']);
 }
 
 .user-avatar {
-  width: 36px;
-  height: 36px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #1db954, #1ed760);
+  overflow: hidden;
+  background-color: var(--spotify-green);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
-  font-size: 18px;
-  color: white;
-  box-shadow: 0 2px 8px rgba(29, 185, 84, 0.3);
 }
 
-.user-details {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+.user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.username {
+.avatar-placeholder {
+  color: var(--spotify-black);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.user-name {
   font-size: 14px;
   font-weight: 500;
+  color: var(--spotify-white);
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.logout-button {
-  background-color: transparent;
-  border: none;
-  color: #b3b3b3;
-  padding: 0;
-  font-size: 12px;
-  cursor: pointer;
-  transition: all 0.2s;
+.dropdown-icon {
+  color: var(--spotify-light-gray);
+  transition: transform 0.2s ease;
+}
+
+.user-info:hover .dropdown-icon {
+  transform: rotate(180deg);
+}
+
+.user-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: var(--space-xs);
+  background-color: var(--spotify-gray);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  min-width: 180px;
+  z-index: 10;
+  overflow: hidden;
+  animation: dropdownFadeIn 0.2s ease;
+}
+
+@keyframes dropdownFadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dropdown-item {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  color: var(--spotify-white);
+  text-decoration: none;
+  transition: background-color 0.2s ease;
 }
 
-.logout-button:hover {
-  color: #1db954;
+.dropdown-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .header-container {
-    flex-direction: column;
-    gap: 15px;
-    text-align: center;
+    padding: var(--space-sm);
   }
   
-  .user-info {
-    width: 100%;
-    justify-content: center;
-    padding: 8px 15px;
+  .tagline {
+    display: none;
   }
   
-  .user-details {
-    align-items: center;
+  .logo-text {
+    font-size: 20px;
+  }
+  
+  .nav-link span {
+    display: none;
+  }
+  
+  .nav-link {
+    padding: var(--space-sm);
+  }
+  
+  .user-name {
+    max-width: 80px;
   }
 }
 </style>
