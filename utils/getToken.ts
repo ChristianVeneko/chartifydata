@@ -17,21 +17,6 @@ export async function getToken(clientId: string, clientSecret: string, code: str
     return await response.json();
   }
   
-  export async function getRefreshToken(clientId: string, clientSecret: string, refreshToken: string): Promise<any> {
-    const basicAuth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
-    
-    const response = await fetch('https://accounts.spotify.com/api/token', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Basic ${basicAuth}`,
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: new URLSearchParams({
-        grant_type: 'refresh_token',
-        refresh_token: refreshToken
-      })
-    });
-    
-    return await response.json();
-  }
+  // Nota: La función getRefreshToken ha sido removida para evitar duplicación
+  // con la implementación en utils/useAuth.js
   

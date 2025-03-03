@@ -43,8 +43,8 @@ export default defineNuxtConfig({
         output: {
           manualChunks: {
             // Separar en chunks para cargar en paralelo
-            'pinia': ['pinia', '@pinia/nuxt'],
-            'vue': ['vue', 'vue-router'],
+            'vue-vendor': ['vue', 'vue-router'],
+            // Removemos pinia de aquí para evitar conflictos
           }
         }
       },
@@ -55,14 +55,15 @@ export default defineNuxtConfig({
     },
     // Optimizar la caché
     optimizeDeps: {
-      include: ['vue', 'pinia', '@pinia/nuxt']
+      include: ['vue']
+      // Removemos pinia para evitar el conflicto
     }
   },
 
   // Optimizaciones para la construcción de Nuxt
   build: {
-    // Optimizar el transpilado
-    transpile: ['pinia'],
+    // No marcar pinia como externo
+    // transpile: ['pinia']
   },
   
   // Optimizar nitro server

@@ -9,6 +9,9 @@ export default defineEventHandler(async (event) => {
   const error = query.error as string;
   const config = useRuntimeConfig();
 
+  console.log('Callback handler iniciado');
+  console.log('Query params recibidos:', { code: code ? 'presente' : 'ausente', state, error });
+
   // Handle authentication errors
   if (error) {
     console.error(`Authentication error: ${error}`);
@@ -27,14 +30,22 @@ export default defineEventHandler(async (event) => {
     const clientSecret = config.clientSecret;
     const redirectUri = config.redirectUri;
     
+    console.log('Configuración de autenticación:', {
+      clientIdPresente: !!clientId,
+      clientSecretPresente: !!clientSecret,
+      redirectUri,
+      baseUrl: config.public.baseUrl
+    });
+    
     if (!clientId || !clientSecret) {
       console.error('Spotify credentials are missing in server configuration');
-      return sendRedirect(event, `${config.public.redirectUri.split('/auth')[0]}?error=missing_credentials`, 302);
+      return sendRedirect(event, `${config.public.baseUrl}?error=missing_credentials`, 302);
     }
     
     // Encode credentials in Base64 for authentication
     const credentials = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
     
+    console.log('Solicitando token a Spotify API...');
     const response = await fetch('https://accounts.spotify.com/api/token', {
       method: 'POST',
       headers: {
@@ -51,10 +62,11 @@ export default defineEventHandler(async (event) => {
     const data = await response.json();
     
     if (!response.ok) {
-      console.error(`Error obtaining token: ${data.error}`);
-      return sendRedirect(event, `${config.public.baseUrl}/auth?error=${encodeURIComponent(data.error)}`, 302);
+      console.error(`Error obtaining token: ${data.error}`, data.error_description);
+      return sendRedirect(event, `${config.public.baseUrl}/auth?error=${encodeURIComponent(data.error)}&error_description=${encodeURIComponent(data.error_description || '')}`, 302);
     }
 
+    console.log('Token obtenido correctamente');
     const redirectUrl = `${config.public.baseUrl}/auth?access_token=${data.access_token}&refresh_token=${data.refresh_token}&expires_in=${data.expires_in}`;
     return sendRedirect(event, redirectUrl, 302);
   } catch (error) {
