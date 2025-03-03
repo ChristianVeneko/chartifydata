@@ -1,6 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  devtools: { enabled: true },
+  // Desactivar devtools en producción para mejorar el rendimiento
+  devtools: { enabled: process.env.NODE_ENV === 'development' },
   css: [
     '~/assets/css/global.css',
   ],
@@ -20,19 +21,56 @@ export default defineNuxtConfig({
 			appDescription: process.env.NUXT_PUBLIC_APP_DESCRIPTION || 'Visualize your Spotify statistics',
 		}
 	},
+  // Optimizaciones para vite
   vite: {
+    // Optimizar la compilación de Vue
     vue: {
       template: {
-        compilerOptions: {
-          // Removed the incorrect isCustomElement setting
-        }
+        compilerOptions: {}
       }
     },
+    // Resolver alias más eficientemente
     resolve: {
       alias: {
         'vue': 'vue/dist/vue.esm-bundler.js'
       }
+    },
+    // Optimizar la construcción
+    build: {
+      // Fragmentar el código para mejor rendimiento
+      chunkSizeWarningLimit: 1000, // Aumentar el límite de advertencia
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            // Separar en chunks para cargar en paralelo
+            'pinia': ['pinia', '@pinia/nuxt'],
+            'vue': ['vue', 'vue-router'],
+          }
+        }
+      },
+      // Minificar el código en producción
+      minify: process.env.NODE_ENV === 'production',
+      // Desactivar source maps en producción
+      sourcemap: process.env.NODE_ENV !== 'production'
+    },
+    // Optimizar la caché
+    optimizeDeps: {
+      include: ['vue', 'pinia', '@pinia/nuxt']
     }
+  },
+
+  // Optimizaciones para la construcción de Nuxt
+  build: {
+    // Optimizar el transpilado
+    transpile: ['pinia'],
+  },
+  
+  // Optimizar nitro server
+  nitro: {
+    // Optimización de compresión
+    compressPublicAssets: true,
+    // Optimizaciones del servidor
+    minify: true
   },
 
   app: {
@@ -54,7 +92,18 @@ export default defineNuxtConfig({
 			htmlAttrs: {
 				lang: 'en'
 			}
-		}
-	}
+		},
+    // Optimizaciones de rendimiento para la aplicación
+    pageTransition: { name: 'page', mode: 'out-in' },
+  },
 
+  // Optimizaciones de rendimiento (solo opciones soportadas)
+  experimental: {
+    // Cargar componentes asíncronicamente
+    asyncContext: true,
+    // Optimizar la carga de los componentes
+    componentIslands: true,
+    // Activar tree shaking para componentes del lado del cliente
+    treeshakeClientOnly: true
+  }
 })
