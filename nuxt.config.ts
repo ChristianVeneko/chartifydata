@@ -1,4 +1,3 @@
-
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
@@ -10,13 +9,13 @@ export default defineNuxtConfig({
 		storesDirs: ['./stores/**']
 	},
 	runtimeConfig: {
-		clientId: 'a',
-		clientSecret: 's',
-		redirectUri: 'v',
+		clientId: process.env.NUXT_CLIENT_ID,
+		clientSecret: process.env.NUXT_CLIENT_SECRET,
+		redirectUri: process.env.NUXT_REDIRECT_URI,
 		public: {
-			clientId: '',
-			baseUrl: '',
-			test:''
+			baseUrl: process.env.NUXT_PUBLIC_BASE_URL,
+			appName: process.env.NUXT_PUBLIC_APP_NAME,
+			appDescription: process.env.NUXT_PUBLIC_APP_DESCRIPTION
 		}
 	},
 
@@ -24,11 +23,22 @@ export default defineNuxtConfig({
 		head: {
 			charset: 'utf-8',
 			viewport: 'width=device-width, initial-scale=1',
-			title: 'Chartifydata',
+			title: 'Chartifydata - Visualiza tus estadísticas de Spotify',
 			meta: [
 				{
 					name: 'description',
-					content: 'hello world'
+					content: 'Visualiza tus artistas, canciones y álbumes más escuchados en Spotify'
+				},
+				{
+					name: 'theme-color',
+					content: '#1db954'
+				}
+			],
+			link: [
+				{
+					rel: 'icon',
+					type: 'image/png',
+					href: '/favicon.png'
 				}
 			]
 		}
