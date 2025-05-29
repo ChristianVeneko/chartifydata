@@ -103,50 +103,32 @@ export const useAuthStore = defineStore('auth', () => {
         tokenExpiresAt.value = parseInt(storedExpiresAt, 10);
       }
 
-      if (storedAccessToken) {
-        // Si el token está próximo a expirar, refrescarlo directamente
-        if (isTokenExpiringSoon.value) {
-          console.log('Token próximo a expirar, refrescando...');
-          const newAccessToken = await getRefreshToken();
-          
-          if (newAccessToken) {
-            accessToken.value = newAccessToken;
-            isLoggedIn.value = true;
-          } else {
-            // Si no se pudo refrescar, intentar validar el token actual
-            const isTokenValid = await validateAccessToken(storedAccessToken);
-            isLoggedIn.value = isTokenValid;
-            accessToken.value = isTokenValid ? storedAccessToken : null;
-          }
+      // Si no hay token o el token ha expirado, limpiar todo
+      if (!storedAccessToken || (tokenExpiresAt.value && Date.now() >= tokenExpiresAt.value)) {
+        clearAuthData();
+        return;
+      }
+
+      // Validar el token con Spotify
+      const isTokenValid = await validateAccessToken(storedAccessToken);
+      
+      if (!isTokenValid) {
+        // Si el token no es válido, intentar refrescarlo
+        const newAccessToken = await getRefreshToken();
+        
+        if (newAccessToken) {
+          accessToken.value = newAccessToken;
+          isLoggedIn.value = true;
         } else {
-          // Si el token no está próximo a expirar, validarlo
-          const isTokenValid = await validateAccessToken(storedAccessToken);
-          
-          if (isTokenValid) {
-            isLoggedIn.value = true;
-            accessToken.value = storedAccessToken;
-          } else {
-            // Si el token no es válido, intentar refrescarlo
-            const newAccessToken = await getRefreshToken();
-            
-            if (newAccessToken) {
-              accessToken.value = newAccessToken;
-              isLoggedIn.value = true;
-            } else {
-              isLoggedIn.value = false;
-              accessToken.value = null;
-              clearAuthData();
-            }
-          }
+          clearAuthData();
         }
       } else {
-        isLoggedIn.value = false;
-        accessToken.value = null;
+        accessToken.value = storedAccessToken;
+        isLoggedIn.value = true;
       }
     } catch (error) {
       console.error('Error checking access token:', error);
-      isLoggedIn.value = false;
-      accessToken.value = null;
+      clearAuthData();
     } finally {
       isLoading.value = false;
       // Emitir evento personalizado después de actualizar el estado de autenticación

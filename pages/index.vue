@@ -23,13 +23,13 @@ const authStore = useAuthStore();
 
 // Personalized welcome message
 const welcomeMessage = computed(() => {
-  if (authStore.userProfile && authStore.userProfile.display_name) {
+  if (authStore.userProfile && authStore.isLoggedIn && authStore.userProfile.display_name) {
     return `Hello, ${authStore.userProfile.display_name}!`;
   }
   return 'Welcome to Chartifydata!';
 });
 
-onMounted(() => {
+onMounted(async () => {
   // Check if there's an error in the URL (redirected from auth)
   const urlParams = new URLSearchParams(window.location.search);
   const errorParam = urlParams.get('error');
@@ -38,7 +38,7 @@ onMounted(() => {
   }
 
   // Verificamos el estado de autenticación al montar
-  authStore.checkAccessToken();
+  await authStore.checkAccessToken();
   
   // Escuchar eventos de cambio de autenticación
   window.addEventListener('auth-state-changed', handleAuthStateChange);
@@ -55,6 +55,7 @@ const handleAuthStateChange = (event) => {
   if (!event.detail.isLoggedIn) {
     // Clear chart data when user logs out
     chartData.value = [];
+    music.value = null;
   }
 };
 
@@ -163,7 +164,7 @@ const scrollToForm = () => {
             <p>To use Chartifydata, you need to connect your Spotify account. This allows us to access your listening data.</p>
             <a :href="loginUrl" class="btn btn-primary login-button">
               <svg viewBox="0 0 24 24" width="20" height="20">
-                <path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/>
+                <path fill="currentColor" d="M12,4L10.59,5.41L16.17,11H4V13H16.17L10.59,18.59L12,20L20,12L12,4Z"/>
               </svg>
               <span>Login with Spotify</span>
             </a>

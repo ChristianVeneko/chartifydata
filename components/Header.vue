@@ -25,7 +25,7 @@
           </li>
           <li v-else class="nav-item user-profile">
             <div class="user-info" @click="toggleUserMenu">
-              <div v-if="authStore.userProfile" class="user-avatar">
+              <div v-if="authStore.userProfile && authStore.isLoggedIn" class="user-avatar">
                 <img 
                   v-if="authStore.userProfile.images && authStore.userProfile.images.length > 0" 
                   :src="authStore.userProfile.images[0].url" 
@@ -35,7 +35,7 @@
                   {{ authStore.userProfile.display_name ? authStore.userProfile.display_name.charAt(0).toUpperCase() : 'U' }}
                 </div>
               </div>
-              <span class="user-name">{{ authStore.userProfile ? authStore.userProfile.display_name : 'User' }}</span>
+              <span class="user-name">{{ authStore.userProfile && authStore.isLoggedIn ? authStore.userProfile.display_name : 'Please login' }}</span>
               <svg viewBox="0 0 24 24" width="16" height="16" class="dropdown-icon">
                 <path fill="currentColor" d="M7,10L12,15L17,10H7Z" />
               </svg>
