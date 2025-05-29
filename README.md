@@ -2,8 +2,6 @@
 
 Chartifydata es una aplicación web que te permite visualizar tus estadísticas personales de Spotify, como artistas, canciones y álbumes más escuchados en diferentes períodos de tiempo, así como tu historial de reproducción reciente.
 
-![Chartifydata Screenshot](https://via.placeholder.com/800x400?text=Chartifydata+Screenshot)
-
 ## Características
 
 - 🎵 **Visualiza tus artistas más escuchados** - Descubre a quiénes escuchas más
@@ -65,8 +63,6 @@ Chartifydata es una aplicación web que te permite visualizar tus estadísticas 
    - Para producción, añade la URL de tu sitio desplegado seguida de `/api/callback`
 3. Copia el Client ID y Client Secret a tu archivo `.env`
 4. Asegúrate de que tu aplicación tiene los permisos (scopes) necesarios:
-   - `user-read-private`
-   - `user-read-email`
    - `user-top-read`
    - `user-read-recently-played`
 
@@ -104,34 +100,6 @@ Los endpoints principales para la autenticación son:
 - `/api/refresh` - Refresca el token de acceso cuando está a punto de expirar
 - `/api/logout` - Cierra la sesión del usuario
 
-## Estructura del proyecto
-
-```
-chartifydata/
-├── assets/           # Recursos estáticos (CSS, imágenes)
-├── components/       # Componentes Vue reutilizables
-│   ├── Header.vue    # Barra de navegación con estado de autenticación
-│   ├── MusicForm.vue # Formulario para seleccionar datos a visualizar
-│   └── ResultsComponent.vue # Visualización de resultados
-├── pages/            # Páginas de la aplicación
-│   ├── index.vue     # Página principal
-│   └── auth.vue      # Página de autenticación
-├── public/           # Archivos públicos (favicon, iconos)
-│   └── assets/       # Recursos accesibles públicamente
-├── server/           # API endpoints (Nitro)
-│   └── api/          # Endpoints de la API
-│       ├── login.ts  # Iniciar autenticación
-│       ├── callback.ts # Procesar callback de Spotify
-│       ├── refresh.js # Refrescar token de acceso
-│       └── logout.js # Cerrar sesión
-├── stores/           # Stores de Pinia
-│   └── auth.js       # Store para gestión de autenticación
-├── utils/            # Utilidades y helpers
-│   └── music.js      # Clase para interactuar con la API de Spotify
-├── .env              # Variables de entorno
-├── nuxt.config.ts    # Configuración de Nuxt
-└── package.json      # Dependencias y scripts
-```
 
 ## Características de UI/UX
 
@@ -155,7 +123,7 @@ Las contribuciones son bienvenidas. Por favor, sigue estos pasos:
 
 ## Licencia
 
-Este proyecto está licenciado bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.
+Este proyecto está licenciado bajo la Licencia MIT
 
 ## Agradecimientos
 
