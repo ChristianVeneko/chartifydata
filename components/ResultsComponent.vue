@@ -335,13 +335,13 @@ const exportData = () => {
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   transition: transform 0.3s ease;
   background-color: var(--spotify-dark-gray);
 }
 
 .result-card:hover .result-image {
-  transform: scale(1.08);
+  transform: none;
 }
 
 .play-overlay {

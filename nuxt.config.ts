@@ -51,7 +51,7 @@ export default defineNuxtConfig({
     compressPublicAssets: true,
     // Optimizaciones del servidor
     minify: true
-  },
+	},
 
   app: {
 		head: {
@@ -59,9 +59,9 @@ export default defineNuxtConfig({
 			meta: [
 				{ charset: 'utf-8' },
 				{ name: 'viewport', content: 'width=device-width, initial-scale=1' },
-				{ 
+				{
 					hid: 'description', 
-					name: 'description', 
+					name: 'description',
 					content: 'Explore and visualize your Spotify statistics with Chartifydata. Discover your most listened artists, songs, and albums.'
 				},
 				{ name: 'theme-color', content: '#1DB954' }
@@ -85,6 +85,6 @@ export default defineNuxtConfig({
     componentIslands: true,
     // Activar tree shaking para componentes del lado del cliente
     treeshakeClientOnly: true
-  }
-  
+	}
+
 })

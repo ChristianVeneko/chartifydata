@@ -48,9 +48,9 @@ onMounted(async () => {
       
       // Redirect after a short delay
       setTimeout(() => {
-        router.push('/');
+    router.push('/');
       }, 2000);
-    } else {
+  } else {
       error.value = 'Missing authentication parameters. Please try again.';
       isLoading.value = false;
     }

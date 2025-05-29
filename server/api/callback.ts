@@ -68,7 +68,7 @@ export default defineEventHandler(async (event) => {
 
     console.log('Token obtenido correctamente');
     const redirectUrl = `${config.public.baseUrl}/auth?access_token=${data.access_token}&refresh_token=${data.refresh_token}&expires_in=${data.expires_in}`;
-    return sendRedirect(event, redirectUrl, 302);
+  return sendRedirect(event, redirectUrl, 302);
   } catch (error) {
     console.error('Error in authentication process:', error);
     return sendRedirect(event, `${config.public.baseUrl}/auth?error=authentication_failed`, 302);

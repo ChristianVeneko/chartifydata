@@ -84,21 +84,21 @@ const getChart = async (data) => {
       throw new Error('No se pudo inicializar el cliente de música. Por favor, inicia sesión de nuevo.');
     }
 
-    if (data.dataType === 'artists') {
-      dataType.value = 'artist';
-      const dataArtist = await music.value.getTopMusic(data.dataTime, data.dataQuantity, data.dataType);
+  if (data.dataType === 'artists') {
+    dataType.value = 'artist';
+    const dataArtist = await music.value.getTopMusic(data.dataTime, data.dataQuantity, data.dataType);
       console.log('getChart - Artists data received:', dataArtist);
-      chartData.value = music.value.createTopArtist(dataArtist);
-    } else if (data.dataType === 'tracks') {
-      dataType.value = 'song';
-      const dataTracks = await music.value.getTopMusic(data.dataTime, data.dataQuantity, data.dataType);
+    chartData.value = music.value.createTopArtist(dataArtist);
+  } else if (data.dataType === 'tracks') {
+    dataType.value = 'song';
+    const dataTracks = await music.value.getTopMusic(data.dataTime, data.dataQuantity, data.dataType);
       console.log('getChart - Tracks data received:', dataTracks);
-      chartData.value = music.value.createTopSongs(dataTracks);
+    chartData.value = music.value.createTopSongs(dataTracks);
     } else if (data.dataType === 'albums') {
-      dataType.value = 'album';
-      const dataAlbums = await music.value.getTopMusic(data.dataTime, data.dataQuantity, 'tracks');
+    dataType.value = 'album';
+    const dataAlbums = await music.value.getTopMusic(data.dataTime, data.dataQuantity, 'tracks');
       console.log('getChart - Albums data received:', dataAlbums);
-      chartData.value = music.value.getTopAlbums(dataAlbums);
+    chartData.value = music.value.getTopAlbums(dataAlbums);
     } else if (data.dataType === 'recently_played') {
       dataType.value = 'recently_played';
       const recentlyPlayed = await music.value.getRecentlyPlayed(data.dataQuantity);
@@ -163,10 +163,11 @@ const scrollToForm = () => {
             <p>To use Chartifydata, you need to connect your Spotify account. This allows us to access your listening data.</p>
             <a :href="loginUrl" class="btn btn-primary login-button">
               <svg viewBox="0 0 24 24" width="20" height="20">
-                <path fill="currentColor" d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,7V12L15,15L13.59,16.41L10,12.83V7H12Z" />
+                <path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/>
               </svg>
               <span>Login with Spotify</span>
             </a>
+            <p class="privacy-notice">By logging in, you agree to our <NuxtLink to="/privacy">Privacy Policy</NuxtLink> and <NuxtLink to="/terms">Terms of Service</NuxtLink></p>
           </div>
           
           <div class="features-section">
